@@ -8,6 +8,7 @@ module.exports = {
     TRANSCRIPT_CHANNEL_ID: process.env.TRANSCRIPT_CHANNEL_ID,
     CLIENT_ID: process.env.CLIENT_ID,
     REJOIN_LOG_CHANNEL: process.env.REJOIN_LOG_CHANNEL,
+    INVITE_LOG_CHANNEL: process.env.INVITE_LOG_CHANNEL,    
     WARN_LOG_CHANNEL: process.env.WARN_LOG_CHANNEL,
     GUILD_ID: process.env.GUILD_ID,
     OWNER_ID: process.env.OWNER_ID,
