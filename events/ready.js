@@ -121,7 +121,9 @@ module.exports = {
             //resetwarns
             new SlashCommandBuilder().setName('resetwarns').setDescription('Reset warnings for a user or all. (Admin only)').addUserOption(option => option.setName('user').setDescription('The user whose warn you want to remove').setRequired(false)).addBooleanOption(option => option.setName('all').setDescription('Reset warns for all users? (true/false)').setRequired(false)),
             //rizz
-            new SlashCommandBuilder().setName('rizz').setDescription('Send a random rizz line to a user').addUserOption(option => option.setName('user').setDescription('The user you want to rizz up').setRequired(true)),      
+            new SlashCommandBuilder().setName('rizz').setDescription('Send a random rizz line to a user').addUserOption(option => option.setName('user').setDescription('The user you want to rizz up').setRequired(true)),
+            //say
+            new SlashCommandBuilder().setName('say').setDescription('Make the bot send a message (Bot owner only)').addStringOption(option => option.setName('message').setDescription('the message for the bot to send').setRequired(true)),
             //statedit    
             new SlashCommandBuilder()
                 .setName('statedit')
