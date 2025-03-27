@@ -24,6 +24,8 @@ const { handleWarn } = require('../commands/warn.js');
 const { handleRemoveWarn } = require('../commands/removewarn.js');
 const { handleResetWarns } = require('../commands/resetwarns.js');
 const { handleWarnings } = require('../commands/warnings.js');
+const { handleSay } = require('../commands/say.js');
+
 
 
 module.exports = {
@@ -34,6 +36,7 @@ module.exports = {
             if (cmd === 'ticket-panel') return handleTicketPanel(interaction);
             if (cmd === 'getticketmanagerrole') return handleTicketManagerRole(interaction);
             if (cmd === 'add') return handleAdd(interaction);
+            if (cmd === 'say') return handleSay(interaction);
             if (cmd === 'remove') return handleRemove(interaction);
             if (cmd === 'close') return handleClose(interaction);
             if (cmd === 'rename') return handleRename(interaction);
