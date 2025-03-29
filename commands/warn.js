@@ -7,6 +7,8 @@ module.exports = {
     name: 'warn',
 
     async handleWarn(interaction) {
+        await interaction.deferReply();
+        
         if (!hasChatAdmin(interaction.member)) {
             return interaction.reply({ content: "❌ You don't have permission to use this command.", ephemeral: true });
         }
@@ -63,16 +65,6 @@ module.exports = {
         } catch (err) {
             console.log(`Could not DM ${user.tag}`);
         }
-
-//        if (totalWarnings % 3 === 0 && member && member.moderatable) {
-//            const timeoutDuration = 60 * 60 * 1000; // 60 minutes timeout
-//            await member.timeout(timeoutDuration, `Accumulated ${totalWarnings} warnings.`);
-
-//            await interaction.channel.send(`⏳ <@${user.id}> has been **timed out for 60 minutes** due to reaching **${totalWarnings} warnings**.`);
-
-//            const logChannel = interaction.guild.channels.cache.get(WARN_LOG_CHANNEL);
-//            if (logChannel) logChannel.send(timeoutMessage);
-//        }
 
         if (totalWarnings % 3 === 0 && member && member.moderatable) {
             const timeoutDuration = 60 * 60 * 1000; // 60 minutes timeout
