@@ -235,6 +235,8 @@ module.exports = {
             if (customId === 'close_ticket') {
 
                 const ticketData = db.prepare("SELECT * FROM tickets WHERE channel_id = ?").get(channel.id);
+                db.prepare("DELETE FROM tickets WHERE channel_id = ?").run(channel.id);
+                db.prepare("DELETE FROM ticket_members WHERE channel_id = ?").run(channel.id);
                 if (!ticketData) {
                     return interaction.reply({ content: "❌ This ticket is already scheduled for deleting.", ephemeral: true });
                 }
@@ -245,9 +247,6 @@ module.exports = {
                 } catch (err) {
                     console.error("❌ Error generating transcript:", err);
                 }
-
-                db.prepare("DELETE FROM tickets WHERE channel_id = ?").run(channel.id);
-                db.prepare("DELETE FROM ticket_members WHERE channel_id = ?").run(channel.id);
 
                 const userId = interaction.user.id;
                 incrementUserStat(userId, 'tickets_closed');
