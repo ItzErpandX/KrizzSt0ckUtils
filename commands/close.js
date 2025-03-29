@@ -17,7 +17,7 @@ module.exports = {
         db.prepare("DELETE FROM tickets WHERE channel_id = ?").run(channel.id);
         db.prepare("DELETE FROM ticket_members WHERE channel_id = ?").run(channel.id);
         if (!ticketData) {
-            return interaction.reply({ content: "❌ This ticket is already scheduled for deleting.", ephemeral: true });
+            return interaction.reply({ content: "❌ This ticket is already scheduled for deleting or not a valid ticket channel.", ephemeral: true });
         }
 
         await interaction.reply({ content: "📜 Saving transcript, please wait..." });
