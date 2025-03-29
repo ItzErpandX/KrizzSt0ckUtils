@@ -14,6 +14,8 @@ module.exports = {
         }
 
         const ticketData = db.prepare("SELECT * FROM tickets WHERE channel_id = ?").get(channel.id);
+        db.prepare("DELETE FROM tickets WHERE channel_id = ?").run(channel.id);
+        db.prepare("DELETE FROM ticket_members WHERE channel_id = ?").run(channel.id);
         if (!ticketData) {
             return interaction.reply({ content: "❌ This ticket is already scheduled for deleting.", ephemeral: true });
         }
@@ -29,8 +31,6 @@ module.exports = {
 
         const userId = interaction.user.id;
         incrementUserStat(userId, 'tickets_closed');
-        db.prepare("DELETE FROM tickets WHERE channel_id = ?").run(channel.id);
-        db.prepare("DELETE FROM ticket_members WHERE channel_id = ?").run(channel.id);
         await interaction.followUp({ content: `🔒 Ticket will close in 10 seconds.` });
         setTimeout(() => channel.delete().catch(console.error), 10000);
     }
