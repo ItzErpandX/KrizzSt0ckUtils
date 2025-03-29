@@ -10,7 +10,7 @@ module.exports = {
         await interaction.deferReply();
         
         if (!hasChatAdmin(interaction.member)) {
-            return interaction.reply({ content: "❌ You don't have permission to use this command.", ephemeral: true });
+            return interaction.editReply({ content: "❌ You don't have permission to use this command.", ephemeral: true });
         }
 
         const user = interaction.options.getUser('user');
@@ -19,7 +19,7 @@ module.exports = {
         const reason = interaction.options.getString('reason') || 'No reason provided';
 
         if (member.roles.highest.position >= moderator.roles.highest.position) {
-            return interaction.reply({ content: `❌ You cannot warn **${user.tag}** because they have a higher or equal role.`, ephemeral: true });
+            return interaction.editReply({ content: `❌ You cannot warn **${user.tag}** because they have a higher or equal role.`, ephemeral: true });
         }
 
         const warnId = [...Array(6)]
@@ -89,7 +89,7 @@ module.exports = {
             )
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
 
         const logChannel = interaction.guild.channels.cache.get(WARN_LOG_CHANNEL);
         if (logChannel) logChannel.send({ embeds: [embed] });
