@@ -110,18 +110,7 @@ module.exports = {
                 // Set permissions
                 await channel.permissionOverwrites.edit(STAFF_ROLE_ID, { SendMessages: false }); // Prevent other staff from writing
                 await channel.permissionOverwrites.edit(member.id, { SendMessages: true });
-            
-                // Update ticket message buttons (always same layout)
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId('claim_ticket').setLabel('Claim Ticket').setStyle(ButtonStyle.Success),
-                    new ButtonBuilder().setCustomId('unclaim_ticket').setLabel('Unclaim Ticket').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('force_claim_ticket').setLabel('Force Claim').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('close_ticket').setLabel('Close Ticket').setStyle(ButtonStyle.Danger)
-                );
-            
-                const ticketMessage = await channel.messages.fetch({ limit: 10 }).then(msgs => msgs.find(msg => msg.components.length > 0));
-                if (ticketMessage) await ticketMessage.edit({ components: [row] });
-            
+
                 await channel.send(`✅ Ticket has been claimed by **${member.user.tag}**.`);
                 return interaction.reply({ content: "✅ You have successfully claimed this ticket.", ephemeral: true });
             }
@@ -149,23 +138,12 @@ module.exports = {
                 // Reset permissions
                 await channel.permissionOverwrites.edit(STAFF_ROLE_ID, { SendMessages: true }); // Staff can now claim again
                 await channel.permissionOverwrites.edit(member.id, { SendMessages: false });
-            
-                // Update ticket message buttons (always same layout)
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId('claim_ticket').setLabel('Claim Ticket').setStyle(ButtonStyle.Success),
-                    new ButtonBuilder().setCustomId('unclaim_ticket').setLabel('Unclaim Ticket').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('force_claim_ticket').setLabel('Force Claim').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('close_ticket').setLabel('Close Ticket').setStyle(ButtonStyle.Danger)
-                );
-            
-                const ticketMessage = await channel.messages.fetch({ limit: 10 }).then(msgs => msgs.find(msg => msg.components.length > 0));
-                if (ticketMessage) await ticketMessage.edit({ components: [row] });
-            
+
                 await channel.send(`✅ Ticket has been unclaimed and is now available for staff to claim.`);
                 return interaction.reply({ content: "✅ You have successfully unclaimed this ticket.", ephemeral: true });
             }
 
-            // toggle ticket manager role
+            // Toggle ticket manager role
             if (interaction.isButton() && interaction.customId === 'toggle_ticket_manager_role') {
                 const member = interaction.member;
             
@@ -180,7 +158,7 @@ module.exports = {
                 }
             }
 
-            // force claim
+            // Force claim
             if (interaction.customId === 'force_claim_ticket') {
                 if (!hasStaffPermission(interaction.member)) {
                     return interaction.reply({ content: "❌ Only staff members can use this button.", ephemeral: true });
@@ -215,18 +193,7 @@ module.exports = {
             
                 // Staff can't write anymore (claimed)
                 await channel.permissionOverwrites.edit(STAFF_ROLE_ID, { SendMessages: false });
-            
-                // Update buttons (same layout always)
-                const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId('claim_ticket').setLabel('Claim Ticket').setStyle(ButtonStyle.Success),
-                    new ButtonBuilder().setCustomId('unclaim_ticket').setLabel('Unclaim Ticket').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('force_claim_ticket').setLabel('Force Claim').setStyle(ButtonStyle.Secondary),
-                    new ButtonBuilder().setCustomId('close_ticket').setLabel('Close Ticket').setStyle(ButtonStyle.Danger)
-                );
-            
-                const ticketMessage = await channel.messages.fetch({ limit: 10 }).then(msgs => msgs.find(msg => msg.components.length > 0));
-                if (ticketMessage) await ticketMessage.edit({ components: [row] });
-            
+
                 await channel.send(`⚠️ **${member.user.tag}** has force-claimed this ticket.`);
                 return interaction.reply({ content: "✅ You have successfully force-claimed this ticket.", ephemeral: true });
             }
