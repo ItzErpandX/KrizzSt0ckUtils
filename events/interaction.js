@@ -201,6 +201,10 @@ module.exports = {
             // Close Ticket
             if (customId === 'close_ticket') {
 
+                if (!hasStaffPermission(interaction.member)) {
+                    return interaction.reply({ content: "❌ Only staff members can close tickets.", ephemeral: true });
+                }
+
                 const ticketData = db.prepare("SELECT * FROM tickets WHERE channel_id = ?").get(channel.id);
                 db.prepare("DELETE FROM tickets WHERE channel_id = ?").run(channel.id);
                 db.prepare("DELETE FROM ticket_members WHERE channel_id = ?").run(channel.id);
