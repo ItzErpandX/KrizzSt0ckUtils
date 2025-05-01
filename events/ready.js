@@ -49,7 +49,9 @@ module.exports = {
 
         const commands = [
             //add
-            new SlashCommandBuilder().setName('add').setDescription('Add a member to the ticket (Staff only)').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),            
+            new SlashCommandBuilder().setName('add').setDescription('Add a member to the ticket (Staff only)').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
+            //rape
+//            new SlashCommandBuilder().setName('rape').setDescription('rape someone').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
             //banner
             bannerCommand.toJSON(),
             //checkrejoin
@@ -170,7 +172,20 @@ module.exports = {
                     option.setName('user')
                         .setDescription('The user whose stats you want to check.')
                         .setRequired(true)
-                ),                  
+                ),
+            //spinthewheel
+            new SlashCommandBuilder()
+                .setName('spinthewheel')
+                .setDescription('Start a spin the wheel game')
+                .addStringOption(option =>
+                    option.setName('title')
+                        .setDescription('Title of the spin the wheel game')
+                        .setRequired(true))
+                .addStringOption(option =>
+                    option.setName('duration')
+                        .setDescription('Duration of the game (e.g., 1m, 30s, 2h, 1d)')
+                        .setRequired(true)
+                ),
             //ticket-panel
             new SlashCommandBuilder().setName('ticket-panel').setDescription('Send the ticket panel (Admin only)'),                
             //warn
@@ -222,6 +237,15 @@ module.exports = {
             incrementUserStat(message.author.id, 'tickets_message_sent');
         }
     });
+        
+//    client.on('messageCreate', async (message) => {
+//    const customEmoji = '1355534833287303268';
+//        try {
+//            await message.react(customEmoji);
+//        } catch (error) {
+//            console.error('Error reacting with emoji:', error);
+//        }
+//    });
 
     cleanupExpiredWarnings();
 
