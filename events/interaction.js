@@ -26,6 +26,7 @@ const { handleResetWarns } = require('../commands/resetwarns.js');
 const { handleWarnings } = require('../commands/warnings.js');
 const { handleSay } = require('../commands/say.js');
 const { handleSpinTheWheel } = require('../commands/spinthewheel.js')
+const { handleForceClean } = require('../commands/forcecleanstwgames.js')
 //const { handleRape } = require('../commands/rape.js');
 
 module.exports = {
@@ -52,6 +53,7 @@ module.exports = {
             if (cmd === 'rizz') return handleRizz(interaction);
             if (cmd === 'info') return handleInfo(interaction);
             if (cmd === 'spinthewheel') return handleSpinTheWheel(interaction);
+            if (cmd === 'forcecleanstwgames') return handleForceClean(interaction);
             if (cmd === 'checkrejoin') return handleCheckRejoin(interaction);
             if (cmd === 'stats') {
                 return handleStats(interaction);
