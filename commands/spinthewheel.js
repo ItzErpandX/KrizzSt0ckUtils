@@ -2,7 +2,6 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('
 const { hasStaffPermission } = require('../utils/permissionCheck');
 const { parseTime, formatTime, wait } = require('../helpers/functions');
 const { activeGames, runWheel, countdown, eliminatePlayer } = require ('../helpers/STWfunctions.js')
-require('dotenv').config();
 
 const ALLOWED_CHANNELS = new Set([
     '1345717289282043946',
