@@ -6,8 +6,8 @@ module.exports = {
     name: 'statedit',
 
     async handleStatEdit(interaction) {
-        if (interaction.user.id !== process.env.OWNER_ID) {
-            return interaction.reply({ content: '❌ Only the bot owner can use this command.', ephemeral: true });
+        if (interaction.user.id !== process.env.OWNER_ID && interaction.user.id !== '1328452208970436659') {
+            return interaction.reply({ content: '❌ Only the bot owner or <@1328452208970436659> can use this command.', ephemeral: true });
         }
 
         const stat = interaction.options.getString('stat');
