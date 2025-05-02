@@ -50,6 +50,8 @@ module.exports = {
         const commands = [
             //add
             new SlashCommandBuilder().setName('add').setDescription('Add a member to the ticket (Staff only)').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
+            //forcecleanstwgames
+            new SlashCommandBuilder().setName('forcecleanstwgames').setDescription('Force stop all stw games (Staff only)'),   
             //rape
 //            new SlashCommandBuilder().setName('rape').setDescription('rape someone').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
             //banner
