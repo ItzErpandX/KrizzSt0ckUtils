@@ -233,10 +233,25 @@ module.exports = {
 
         // Modal Submission
         if (interaction.isModalSubmit() && interaction.customId === 'ticket_reason_modal') {
+
+            // moving const member and channel here first so
+            // we can fetch the member and channel's id later
+            const member = interaction.member;
             const channel = interaction.channel;
+            
+            // cancels the ticket creation if user already has ticket
+            // this serves as a fix for that rare glitch where people can create 2 tickets at the same time
+            // if modal fails to close for some reason
+            const existingTicket = db.prepare("SELECT channel_id FROM tickets WHERE user_id = ?").get(member.id);
+                if (existingTicket) {
+                    return interaction.reply({
+                        content: `❌ You already have an open ticket: <#${existingTicket.channel_id}>`,
+                        ephemeral: true,
+                    });
+                }
+
             const reason = interaction.fields.getTextInputValue('ticket_reason');
             const guild = interaction.guild;
-            const member = interaction.member;
             const ticketData = db.prepare("SELECT * FROM tickets WHERE channel_id = ?").get(channel.id);
             const ticketClaimed = ticketData && ticketData.staff_id;
             const userId = interaction.user.id;
