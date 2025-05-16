@@ -1,4 +1,4 @@
-const { REST, Routes, SlashCommandBuilder, ActivityType, MessageAttachment } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, ActivityType } = require('discord.js');
 const { CLIENT_ID, GUILD_ID, TOKEN } = require('../config');
 const { bannerCommand } = require('../commands/banner');
 const stateditCommand = require('../commands/statedit');
