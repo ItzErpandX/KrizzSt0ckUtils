@@ -18,7 +18,7 @@ const { incrementUserStat } = require('../helpers/statistics');
 const { handleCheckRejoin } = require('../commands/checkrejoin');
 const { handleInfo } = require('../commands/info');
 const { handleStats } = require('../commands/stats.js');
-const { handleStatEdit } = require('../commands/statedit.js');
+//const { handleStatEdit } = require('../commands/statedit.js');
 const { handleRizz } = require('../commands/rizz.js');
 const { handleWarn } = require('../commands/warn.js');
 const { handleRemoveWarn } = require('../commands/removewarn.js');
@@ -27,7 +27,8 @@ const { handleWarnings } = require('../commands/warnings.js');
 const { handleSay } = require('../commands/say.js');
 const { handleSpinTheWheel } = require('../commands/spinthewheel.js')
 const { handleForceClean } = require('../commands/forcecleanstwgames.js')
-//const { handleRape } = require('../commands/rape.js');
+const { handleRape } = require('../commands/rape.js');
+const stateditCommand = require('../commands/statedit')
 
 module.exports = {
     name: 'interactionCreate',
@@ -42,7 +43,7 @@ module.exports = {
             if (cmd === 'close') return handleClose(interaction);
             if (cmd === 'rename') return handleRename(interaction);
             if (cmd === 'rejoins') return handleRejoins(interaction);
-//            if (cmd === 'rape') return handleRape(interaction);
+            if (cmd === 'rape') return handleRape(interaction);
             if (cmd === 'banner') return handleBannerCommand(interaction);
             if (cmd === 'invitedlist') return handleInvitedList(interaction);
             if (cmd === 'warn') return handleWarn(interaction);
@@ -59,7 +60,7 @@ module.exports = {
                 return handleStats(interaction);
             } 
             if (cmd === 'statedit') {
-                return handleStatEdit(interaction);
+                await stateditCommand.execute(interaction);
             }
             if (cmd === 'leaderboard') {
                 await leaderboardCommand.handleLeaderboard(interaction);
@@ -249,7 +250,7 @@ module.exports = {
                         ephemeral: true,
                     });
                 }
-
+            
             const reason = interaction.fields.getTextInputValue('ticket_reason');
             const guild = interaction.guild;
             const ticketData = db.prepare("SELECT * FROM tickets WHERE channel_id = ?").get(channel.id);
@@ -290,4 +291,3 @@ module.exports = {
         }
     }
 };
-
