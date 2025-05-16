@@ -1,6 +1,7 @@
-const { REST, Routes, SlashCommandBuilder, ActivityType } = require('discord.js');
+const { REST, Routes, SlashCommandBuilder, ActivityType, MessageAttachment } = require('discord.js');
 const { CLIENT_ID, GUILD_ID, TOKEN } = require('../config');
 const { bannerCommand } = require('../commands/banner');
+const stateditCommand = require('../commands/statedit');
 const { generateInvitesCache } = require('../helpers/functions');
 const { incrementUserStat } = require('../helpers/statistics');
 const { isTicketChannel } = require('../utils/tickets');
@@ -53,7 +54,7 @@ module.exports = {
             //forcecleanstwgames
             new SlashCommandBuilder().setName('forcecleanstwgames').setDescription('Force stop all stw games (Staff only)'),   
             //rape
-//            new SlashCommandBuilder().setName('rape').setDescription('rape someone').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
+            new SlashCommandBuilder().setName('rape').setDescription('rape someone').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
             //banner
             bannerCommand.toJSON(),
             //checkrejoin
@@ -129,43 +130,7 @@ module.exports = {
             //say
             new SlashCommandBuilder().setName('say').setDescription('Make the bot send a message (Bot owner only)').addStringOption(option => option.setName('message').setDescription('the message for the bot to send').setRequired(true)),
             //statedit    
-            new SlashCommandBuilder()
-                .setName('statedit')
-                .setDescription('Modify a user\'s ticket stats (Bot Owner only).')
-                .addStringOption(option =>
-                    option.setName('stat')
-                        .setDescription('The stat to modify.')
-                        .setRequired(true)
-                        .addChoices(
-                            { name: 'Tickets Opened', value: 'tickets_opened' },
-                            { name: 'Tickets Closed', value: 'tickets_closed' },
-                            { name: 'Tickets Claimed', value: 'tickets_claimed' },
-                            { name: 'Tickets Unclaimed', value: 'tickets_unclaimed' },
-                            { name: 'Tickets Force Claimed', value: 'tickets_force_claimed' },
-                            { name: 'Tickets Message Sent', value: 'tickets_message_sent' },
-                            { name: 'Tickets Staff Message Sent', value: 'tickets_staff_message_sent' }
-                        )
-                )
-                .addStringOption(option =>
-                    option.setName('option')
-                        .setDescription('Choose an action (add/remove/set).')
-                        .setRequired(true)
-                        .addChoices(
-                            { name: 'Add', value: 'add' },
-                            { name: 'Remove', value: 'remove' },
-                            { name: 'Set', value: 'set' }
-                        )
-                )
-                .addUserOption(option =>
-                    option.setName('user')
-                        .setDescription('The user whose stat you want to modify.')
-                        .setRequired(true)
-                )
-                .addIntegerOption(option =>
-                    option.setName('amount')
-                        .setDescription('The value to modify the stat by.')
-                        .setRequired(true)
-                ),
+            stateditCommand.data.toJSON(),
             //stats    
             new SlashCommandBuilder()
                 .setName('stats')
@@ -248,6 +213,7 @@ module.exports = {
 //            console.error('Error reacting with emoji:', error);
 //        }
 //    });
+        
 
     cleanupExpiredWarnings();
 
