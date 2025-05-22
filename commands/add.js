@@ -15,7 +15,7 @@ module.exports = {
         if (!ticketData) return interaction.reply({ content: "❌ Not a valid ticket channel.", ephemeral: true });
 
         db.prepare("INSERT OR IGNORE INTO ticket_members (channel_id, member_id) VALUES (?, ?)").run(channel.id, member.id);
-        await channel.permissionOverwrites.edit(member.id, { ViewChannel: true, SendMessages: true });
+        await channel.permissionOverwrites.edit(member.id, { ViewChannel: true, SendMessages: true, AttachFiles: true, EmbedLinks: true });
 
         return interaction.reply({ content: `✅ **${member.user.tag}** has been added to the ticket!` });
     }
