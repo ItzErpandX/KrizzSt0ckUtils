@@ -2,8 +2,9 @@ const { REST, Routes, SlashCommandBuilder, ActivityType } = require('discord.js'
 const { CLIENT_ID, GUILD_ID, TOKEN } = require('../config');
 const { bannerCommand } = require('../commands/banner');
 const stateditCommand = require('../commands/statedit');
+const messagesCommand = require('../commands/messages');
 const { generateInvitesCache } = require('../helpers/functions');
-const { incrementUserStat } = require('../helpers/statistics');
+const { incrementUserStat, incrementMessageCount } = require('../helpers/statistics');
 const { isTicketChannel } = require('../utils/tickets');
 const { hasStaffPermission } = require('../utils/permissionCheck');
 const { cleanupExpiredWarnings } = require('../tasks/cleanupWarnings');
@@ -47,7 +48,7 @@ module.exports = {
                 console.error(`❌ Failed to fetch invites for ${guild.name}:`, err);
             }
         });
-
+        
         const commands = [
             //add
             new SlashCommandBuilder().setName('add').setDescription('Add a member to the ticket (Staff only)').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
@@ -96,7 +97,8 @@ module.exports = {
                             { name: 'Tickets Unclaimed', value: 'tickets_unclaimed' },
                             { name: 'Tickets Force Claimed', value: 'tickets_force_claimed' },
                             { name: 'Tickets Message Sent', value: 'tickets_message_sent' },
-                            { name: 'Tickets Staff Message Sent', value: 'tickets_staff_message_sent' }
+                            { name: 'Tickets Staff Message Sent', value: 'tickets_staff_message_sent' },
+                            { name: 'Messages Sent', value: 'messages_sent' }
                         )
                 ),  
             //rejoins
@@ -131,6 +133,8 @@ module.exports = {
             new SlashCommandBuilder().setName('say').setDescription('Make the bot send a message (Bot owner only)').addStringOption(option => option.setName('message').setDescription('the message for the bot to send').setRequired(true)),
             //statedit    
             stateditCommand.data.toJSON(),
+            //messages
+            messagesCommand.data.toJSON(),
             //stats    
             new SlashCommandBuilder()
                 .setName('stats')
@@ -193,15 +197,19 @@ module.exports = {
 
     client.on('messageCreate', (message) => {
         if (message.author.bot) return;
+        if (!message.guild || !message.member) return;
 
         if (!isTicketChannel(message.channel.id)) {
+            incrementMessageCount(message.author.id);
             return;
         }
 
         if (hasStaffPermission(message.member)) {
             incrementUserStat(message.author.id, 'tickets_staff_message_sent');
+            incrementMessageCount(message.author.id);
         } else {
             incrementUserStat(message.author.id, 'tickets_message_sent');
+            incrementMessageCount(message.author.id);
         }
     });
         
@@ -213,7 +221,6 @@ module.exports = {
 //            console.error('Error reacting with emoji:', error);
 //        }
 //    });
-        
 
     cleanupExpiredWarnings();
 
