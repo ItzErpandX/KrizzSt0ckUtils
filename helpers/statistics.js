@@ -17,4 +17,21 @@ function incrementUserStat(userId, column) {
     }
 }
 
-module.exports = { incrementUserStat };
+function incrementMessageCount(userId) {
+    const exists = db.prepare('SELECT * FROM user_messages WHERE user_id = ?').get(userId);
+
+    if (!exists) {
+        db.prepare(`
+            INSERT INTO user_messages (user_id, message_count) 
+            VALUES (?, 1)
+        `).run(userId);
+    } else {
+        db.prepare(`
+            UPDATE user_messages
+            SET message_count = message_count + 1
+            WHERE user_id = ?
+        `).run(userId);
+    }
+}
+
+module.exports = { incrementUserStat, incrementMessageCount };
