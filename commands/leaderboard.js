@@ -12,11 +12,34 @@ module.exports = {
             'tickets_unclaimed',
             'tickets_force_claimed',
             'tickets_message_sent',
-            'tickets_staff_message_sent'
+            'tickets_staff_message_sent',
+            'messages_sent'
         ];
 
         if (!validOptions.includes(option)) {
             return interaction.reply({ content: "❌ Invalid option. Please choose a valid one.", ephemeral: true });
+        }
+
+        if (option === 'messages_sent') {
+            const query = `SELECT user_id, message_count FROM user_messages WHERE message_count > 0 ORDER BY message_count DESC LIMIT 10;`;
+            const leaderboard = db.prepare(query).all();
+
+            if (!leaderboard.length) {
+                return interaction.reply({ content: "❌ No data found for **messages** leaderboard.", ephemeral: true });
+            }
+
+            const embed = new EmbedBuilder()
+                .setTitle("🏆 Leaderboard - MESSAGES SENT")
+                .setColor('Gold')
+                .setTimestamp();
+
+            const description = leaderboard
+                .map((entry, index) => `**${index + 1}.** <@${entry.user_id}> - **${entry.message_count}**`)
+                .join("\n");
+
+            embed.setDescription(description);
+
+            return interaction.reply({ embeds: [embed] });
         }
 
         // Assuming you have a `ticket_stats` table where you store all these counts
