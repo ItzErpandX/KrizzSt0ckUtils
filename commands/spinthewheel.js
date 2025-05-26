@@ -1,16 +1,39 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
 const { hasStaffPermission } = require('../utils/permissionCheck');
-const { parseTime, formatTime, wait } = require('../helpers/functions');
-const { activeGames, runWheel, countdown, eliminatePlayer } = require ('../helpers/STWfunctions.js')
+const { parseTime } = require('../helpers/functions');
+const { activeGames, runWheel } = require('../helpers/STWfunctions.js');
+const db = require('../database'); 
+require('dotenv').config();
 
 const ALLOWED_CHANNELS = new Set([
     '1345717289282043946',
     '1345717291089662077'
+    // '1354549924808753263',
+    // '1354549926335610936'
 ]);
 
 module.exports = {
-    name: 'spinthewheel',
-    async handleSpinTheWheel(interaction) {
+    data: new SlashCommandBuilder()
+        .setName('spinthewheel')
+        .setDescription('Start a spin the wheel game')
+        .addStringOption(option =>
+            option.setName('title')
+                .setDescription('Title of the spin the wheel game')
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('duration')
+                .setDescription('Duration of the game (e.g., 1m, 30s, 2h, 1d)')
+                .setRequired(true))
+        .addIntegerOption(option =>
+            option.setName('min_messages')
+                .setDescription('Minimum messages required to join (optional)')
+                .setRequired(false))
+        .addChannelOption(option =>
+            option.setName('voice_channel')
+                .setDescription('Voice channel requirement (optional)')
+                .setRequired(false)),
+    
+    async execute(interaction) {
         try {
             // Channel check
             if (!ALLOWED_CHANNELS.has(interaction.channel.id)) {
@@ -22,11 +45,20 @@ module.exports = {
 
             const title = interaction.options.getString('title');
             const duration = interaction.options.getString('duration');
+            const minMessages = interaction.options.getInteger('min_messages') || 0;
+            const voiceChannel = interaction.options.getChannel('voice_channel');
             const channel = interaction.channel;
 
             // Permissions check
             if (!hasStaffPermission(interaction.member)) {
                 return interaction.reply({ content: "❌ Only staff can use this command.", ephemeral: true });
+            }
+
+            if (voiceChannel && voiceChannel.type !== ChannelType.GuildVoice) {
+                return interaction.reply({
+                    content: '❌ The provided channel must be a voice channel!',
+                    ephemeral: true
+                });
             }
 
             // Game active check
@@ -49,16 +81,55 @@ module.exports = {
             const gameData = {
                 participants,
                 endTime: Date.now() + time * 1000,
-                title
+                title,
+                minMessages,
+                voiceChannel: voiceChannel ? voiceChannel.id : null
             };
             activeGames.set(channel.id, gameData);
 
+            if (voiceChannel) {
+                const voiceCheck = async (oldState, newState) => {
+                    const game = activeGames.get(channel.id);
+                    if (!game || !game.voiceChannel) return;
+
+                    const userId = newState.member?.id;
+                    if (!userId || !game.participants.has(userId)) return;
+
+                    const isStillInVC = newState.channelId === game.voiceChannel;
+                    if (!isStillInVC) {
+                        game.participants.delete(userId);
+
+                        try {
+                            await newState.member.send(
+                                `❌ You were removed from **${game.title}** because you left <#${game.voiceChannel}>`
+                            );
+                        } catch {
+                            // Ignore DM errors
+                        }
+                    }
+                };
+
+                interaction.client.on(Events.VoiceStateUpdate, voiceCheck);
+                gameData.voiceCheckListener = voiceCheck;
+            }
+
+            // Build description with requirements
+            let description = [
+                `**Participants:** 0`,
+                `**Ends:** <t:${Math.floor((Date.now() + time * 1000) / 1000)}:R>`
+            ];
+
+            if (minMessages > 0) {
+                description.push(`**Message Requirement:** ${minMessages}+ messages`);
+            }
+
+            if (voiceChannel) {
+                description.push(`**Voice Channel:** <#${voiceChannel.id}>`);
+            }
+
             const embed = new EmbedBuilder()
                 .setTitle(`🎡 Spin The Wheel – ${title}`)
-                .setDescription([
-                    `**Participants:** 0`,
-                    `**Ends:** <t:${Math.floor((Date.now() + time * 1000) / 1000)}:R>`
-                ].join('\n'))
+                .setDescription(description.join('\n'))
                 .setColor('#FFD700');
 
             const joinButton = new ButtonBuilder()
@@ -85,16 +156,30 @@ module.exports = {
 
                     const remaining = Math.max(0, Math.ceil((game.endTime - Date.now()) / 1000));
 
-                    embed.setDescription([
+                    // Update description with current participants
+                    let updatedDescription = [
                         `**Participants:** ${game.participants.size}`,
                         `**Ends:** <t:${Math.floor(game.endTime / 1000)}:R>`
-                    ].join('\n'));
+                    ];
+
+                    if (game.minMessages > 0) {
+                        updatedDescription.push(`**Message Requirement:** ${game.minMessages}+ messages`);
+                    }
+
+                    if (game.voiceChannel) {
+                        updatedDescription.push(`**Voice Channel:** <#${game.voiceChannel}>`);
+                    }
+                    
+                    embed.setDescription(updatedDescription.join('\n'));
 
                     await msg.edit({ embeds: [embed], components: [row] });
 
                     if (remaining <= 0) {
                         clearInterval(updateInterval);
                         await msg.edit({ components: [] });
+                        if (gameData.voiceCheckListener) {
+                            interaction.client.off(Events.VoiceStateUpdate, gameData.voiceCheckListener);
+                        }
                         await runWheel(interaction, game.participants, game.title);
                     }
                 } catch (error) {
@@ -124,6 +209,30 @@ module.exports = {
                             content: '⚠️ You already joined!',
                             ephemeral: true
                         });
+                    }
+
+                    // Check message count requirement
+                    if (game.minMessages > 0) {
+                        const userMessages = db.prepare('SELECT message_count FROM user_messages WHERE user_id = ?').get(i.user.id);
+                        const messageCount = userMessages ? userMessages.message_count : 0;
+                        
+                        if (messageCount < game.minMessages) {
+                            return i.reply({
+                                content: `❌ You need at least ${game.minMessages} messages to join this drop!`,
+                                ephemeral: true
+                            });
+                        }
+                    }
+
+                    // Check voice channel requirement
+                    if (game.voiceChannel) {
+                        const member = await i.guild.members.fetch(i.user.id);
+                        if (!member.voice.channel || member.voice.channel.id !== game.voiceChannel) {
+                            return i.reply({
+                                content: `❌ You must be in the voice channel <#${game.voiceChannel}> to join this drop!`,
+                                ephemeral: true
+                            });
+                        }
                     }
 
                     game.participants.add(i.user.id);
