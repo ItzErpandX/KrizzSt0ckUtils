@@ -25,10 +25,11 @@ const { handleRemoveWarn } = require('../commands/removewarn.js');
 const { handleResetWarns } = require('../commands/resetwarns.js');
 const { handleWarnings } = require('../commands/warnings.js');
 const { handleSay } = require('../commands/say.js');
-const { handleSpinTheWheel } = require('../commands/spinthewheel.js')
 const { handleForceClean } = require('../commands/forcecleanstwgames.js')
 const { handleRape } = require('../commands/rape.js');
 const stateditCommand = require('../commands/statedit')
+const messagesCommand = require('../commands/messages')
+const stwCommand = require('../commands/spinthewheel.js')
 
 module.exports = {
     name: 'interactionCreate',
@@ -53,7 +54,7 @@ module.exports = {
             if (cmd === 'resetinvites') return handleResetInvites(interaction);
             if (cmd === 'rizz') return handleRizz(interaction);
             if (cmd === 'info') return handleInfo(interaction);
-            if (cmd === 'spinthewheel') return handleSpinTheWheel(interaction);
+            if (cmd === 'spinthewheel') return stwCommand.execute(interaction);
             if (cmd === 'forcecleanstwgames') return handleForceClean(interaction);
             if (cmd === 'checkrejoin') return handleCheckRejoin(interaction);
             if (cmd === 'stats') {
@@ -61,6 +62,9 @@ module.exports = {
             } 
             if (cmd === 'statedit') {
                 await stateditCommand.execute(interaction);
+            }
+            if (cmd === 'messages') {
+                await messagesCommand.execute(interaction);
             }
             if (cmd === 'leaderboard') {
                 await leaderboardCommand.handleLeaderboard(interaction);
