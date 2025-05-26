@@ -3,6 +3,7 @@ const { CLIENT_ID, GUILD_ID, TOKEN } = require('../config');
 const { bannerCommand } = require('../commands/banner');
 const stateditCommand = require('../commands/statedit');
 const messagesCommand = require('../commands/messages');
+const stwCommand = require('../commands/spinthewheel.js')
 const { generateInvitesCache } = require('../helpers/functions');
 const { incrementUserStat, incrementMessageCount } = require('../helpers/statistics');
 const { isTicketChannel } = require('../utils/tickets');
@@ -145,18 +146,7 @@ module.exports = {
                         .setRequired(true)
                 ),
             //spinthewheel
-            new SlashCommandBuilder()
-                .setName('spinthewheel')
-                .setDescription('Start a spin the wheel game')
-                .addStringOption(option =>
-                    option.setName('title')
-                        .setDescription('Title of the spin the wheel game')
-                        .setRequired(true))
-                .addStringOption(option =>
-                    option.setName('duration')
-                        .setDescription('Duration of the game (e.g., 1m, 30s, 2h, 1d)')
-                        .setRequired(true)
-                ),
+            stwCommand.data.toJSON(),
             //ticket-panel
             new SlashCommandBuilder().setName('ticket-panel').setDescription('Send the ticket panel (Admin only)'),                
             //warn
