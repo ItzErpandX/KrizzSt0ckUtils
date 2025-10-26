@@ -10,5 +10,7 @@ db.prepare(`CREATE TABLE IF NOT EXISTS all_invites (code TEXT PRIMARY KEY, invit
 db.prepare(`CREATE TABLE IF NOT EXISTS ticket_stats (user_id TEXT PRIMARY KEY, tickets_opened INTEGER DEFAULT 0, tickets_closed INTEGER DEFAULT 0, tickets_claimed INTEGER DEFAULT 0, tickets_unclaimed INTEGER DEFAULT 0, tickets_force_claimed INTEGER DEFAULT 0, tickets_message_sent INTEGER DEFAULT 0, tickets_staff_message_sent INTEGER DEFAULT 0)`).run();
 db.prepare(`CREATE TABLE IF NOT EXISTS warnings (warn_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, moderator_id TEXT NOT NULL, reason TEXT, timestamp TEXT, expires_at TEXT)`).run();
 db.prepare(`CREATE TABLE IF NOT EXISTS user_messages (user_id TEXT PRIMARY KEY, message_count INTEGER DEFAULT 0)`).run();
+db.prepare(`CREATE TABLE IF NOT EXISTS account_listings (message_id TEXT PRIMARY KEY, channel_id TEXT, user_id TEXT, price TEXT, description TEXT, image_url TEXT, is_sold INTEGER DEFAULT 0, created_at TEXT DEFAULT CURRENT_TIMESTAMP)`).run();
+db.prepare(`CREATE TABLE IF NOT EXISTS sticky_messages (channel_id TEXT PRIMARY KEY, message TEXT, last_message_id TEXT, last_reposted INTEGER)`).run();
 
 module.exports = db;

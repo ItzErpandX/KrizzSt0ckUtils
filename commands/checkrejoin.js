@@ -1,4 +1,4 @@
-const { EmbedBuilder, PermissionsBitField } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { hasStaffPermission } = require('../utils/permissionCheck');
 const db = require('../database');
 
@@ -14,16 +14,16 @@ module.exports = {
         const rejoinRecords = db.prepare('SELECT * FROM rejoins WHERE user_id = ?').all(user.id);
 
         if (!rejoinRecords.length) {
-            return interaction.reply({ content: `❌ No rejoin records found for **${user.tag}**.`, ephemeral: true });
+            return interaction.reply({ content: `❌ No rejoin record found for **${user.tag}**.`, ephemeral: true });
         }
 
         const embed = new EmbedBuilder()
-            .setTitle(`🔁 Rejoin Records for ${user.tag}`)
+            .setTitle(`🔁 Check rejoin for ${user.tag}`)
             .setColor('Orange')
             .setTimestamp();
 
-        const desc = rejoinRecords.map((record, idx) => 
-            `**${idx + 1}.** Invited by: ${record.inviter_id ? `<@${record.inviter_id}>` : 'Unknown'} | First Joined: <t:${Math.floor(new Date(record.first_joined_at).getTime() / 1000)}:f>`
+        const desc = rejoinRecords.map((record) =>
+            `First joined at: <t:${Math.floor(new Date(record.first_joined_at).getTime() / 1000)}:f>`
         ).join("\n");
 
         embed.setDescription(desc.length > 4000 ? desc.slice(0, 4000) + "\n...and more" : desc);

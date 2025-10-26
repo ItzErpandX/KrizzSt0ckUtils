@@ -74,7 +74,7 @@ module.exports = {
     async execute(interaction) {
         const subcommand = interaction.options.getSubcommand();
 
-        if (interaction.user.id !== process.env.OWNER_ID && interaction.user.id !== '1328452208970436659') {
+        if (interaction.user.id !== process.env.OWNER_ID && interaction.user.id !== process.env.OWNER_ID2 && interaction.user.id !== '1328452208970436659') {
             return interaction.reply({ content: '❌ Only the bot owner or <@1328452208970436659> can use this command.', ephemeral: true });
         }
 

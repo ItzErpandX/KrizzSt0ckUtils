@@ -5,14 +5,14 @@ module.exports = {
     async handleRape(interaction) {
         const member = interaction.options.getMember('member');
 
-        if (interaction.user.id !== process.env.OWNER_ID && interaction.user.id !== '1328452208970436659') {
+        if (interaction.user.id !== process.env.OWNER_ID && interaction.user.id !== process.env.OWNER_ID2 && interaction.user.id !== '1328452208970436659') {
             return interaction.reply({
                 content: `❌ Only <@${process.env.OWNER_ID}> or <@1328452208970436659> can use this command.`,
                 ephemeral: true
             });
         }
 
-        if (member.user.id === process.env.OWNER_ID) {
+        if (member.user.id === process.env.OWNER_ID && member.user.id === process.env.OWNER_ID2) {
             return interaction.reply({
                 content: '❌ You cannot rape my bot owner lil vro'
             });

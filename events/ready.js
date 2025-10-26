@@ -4,6 +4,8 @@ const { bannerCommand } = require('../commands/banner');
 const stateditCommand = require('../commands/statedit');
 const messagesCommand = require('../commands/messages');
 const stwCommand = require('../commands/spinthewheel.js')
+const roastCommand = require('../commands/roast')
+const stickyCommand = require('../commands/sticky.js');
 const { generateInvitesCache } = require('../helpers/functions');
 const { incrementUserStat, incrementMessageCount } = require('../helpers/statistics');
 const { isTicketChannel } = require('../utils/tickets');
@@ -15,7 +17,7 @@ const invitesCache = {};
 
 
 module.exports = {
-    name: 'ready',
+    name: 'clientReady',
     async execute(client) {
 
         console.log("")
@@ -27,7 +29,7 @@ module.exports = {
 ██╔═██╗ ██╔══██╗██║ ███╔╝   ███╔╝      ╚════██║   ██║   ████╔╝██║██║     ██╔═██╗ 
 ██║  ██╗██║  ██║██║███████╗███████╗    ███████║   ██║   ╚██████╔╝╚██████╗██║  ██╗
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝    ╚══════╝   ╚═╝    ╚═════╝  ╚═════╝╚═╝  ╚═╝`);
-        console.log("Made by ItzErpandX with <3 for Krizz St0ck")
+        console.log("Made by ItzErpandX with <3 for Krizz Vault")
         console.log(`${client.user.tag} is online!`);
 
         client.user.setPresence({
@@ -56,13 +58,13 @@ module.exports = {
             //forcecleanstwgames
             new SlashCommandBuilder().setName('forcecleanstwgames').setDescription('Force stop all stw games (Staff only)'),   
             //rape
-            new SlashCommandBuilder().setName('rape').setDescription('rape someone').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
+        //    new SlashCommandBuilder().setName('rape').setDescription('rape someone').addUserOption(option => option.setName('member').setDescription('Member').setRequired(true)),
             //banner
             bannerCommand.toJSON(),
             //checkrejoin
             new SlashCommandBuilder()
                 .setName('checkrejoin')
-                .setDescription('Check all rejoin records of a user (Staff only).')
+                .setDescription('Check if a user has ever rejoined (Staff only).')
                 .addUserOption(option =>
                     option.setName('user')
                         .setDescription('The user to check.')
@@ -147,6 +149,9 @@ module.exports = {
                 ),
             //spinthewheel
             stwCommand.data.toJSON(),
+            roastCommand.data.toJSON(),
+            //sticky
+            stickyCommand.data.toJSON(),
             //ticket-panel
             new SlashCommandBuilder().setName('ticket-panel').setDescription('Send the ticket panel (Admin only)'),                
             //warn
@@ -211,6 +216,17 @@ module.exports = {
 //            console.error('Error reacting with emoji:', error);
 //        }
 //    });
+
+//client.on('messageCreate', async (message) => {
+//  if (message.author.bot) return;
+//  if (message.content === '!owo') {
+//    try {
+//      await message.member.roles.add('1398407691117789385');
+//    } catch (error) {
+//      console.error(error);
+//    }
+//  }
+//});
 
     cleanupExpiredWarnings();
 

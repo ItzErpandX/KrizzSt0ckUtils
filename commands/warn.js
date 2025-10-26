@@ -67,7 +67,7 @@ module.exports = {
         }
 
         if (totalWarnings % 3 === 0 && member && member.moderatable) {
-            const timeoutDuration = 60 * 60 * 1000; // 60 minutes timeout
+            const timeoutDuration = 60 * 60 * 1000;
             await member.timeout(timeoutDuration, `Accumulated ${totalWarnings} warnings.`);
             const timeoutMessage = `⏳ <@${user.id}> has been **timed out for 60 minutes** due to reaching **${totalWarnings} warnings**.`;
             await interaction.channel.send(timeoutMessage);

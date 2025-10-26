@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Events } = require('discord.js');
 const { hasStaffPermission } = require('../utils/permissionCheck');
 const { parseTime } = require('../helpers/functions');
 const { activeGames, runWheel } = require('../helpers/STWfunctions.js');
@@ -6,10 +6,8 @@ const db = require('../database');
 require('dotenv').config();
 
 const ALLOWED_CHANNELS = new Set([
-    '1345717289282043946',
-    '1345717291089662077'
-    // '1354549924808753263',
-    // '1354549926335610936'
+    '1390974972599730186',
+    '1406661351434092545'
 ]);
 
 module.exports = {
@@ -180,7 +178,12 @@ module.exports = {
                         if (gameData.voiceCheckListener) {
                             interaction.client.off(Events.VoiceStateUpdate, gameData.voiceCheckListener);
                         }
-                        await runWheel(interaction, game.participants, game.title);
+                        if (game.voiceChannel) {
+                            await runWheel(interaction, game.participants, game.title, game.voiceChannel);
+                        }
+                        else if (game.voiceChannel === null) {
+                            await runWheel(interaction, game.participants, game.title);
+                        }
                     }
                 } catch (error) {
                     console.error('Update error:', error);

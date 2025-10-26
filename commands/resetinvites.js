@@ -15,6 +15,7 @@ module.exports = {
             // Reset all invites for everyone
             const total = db.prepare('SELECT COUNT(*) AS total FROM invites').get().total;
             db.prepare('DELETE FROM invites').run();
+            db.prepare('UPDATE rejoins SET inviter_id = NULL').run();
 
             const embed = new EmbedBuilder()
                 .setTitle('🔄 All Invites Reset')
@@ -22,7 +23,7 @@ module.exports = {
                 .setColor('Red')
                 .setTimestamp();
 
-            return interaction.reply({ embeds: [embed], ephemeral: true });
+            return interaction.reply({ embeds: [embed] });
         }
 
         // If specific user provided
@@ -32,11 +33,8 @@ module.exports = {
 
         const count = db.prepare('SELECT COUNT(*) AS total FROM invites WHERE inviter_id = ?').get(user.id).total;
 
-        if (count === 0) {
-            return interaction.reply({ content: `❌ **${user.tag}** hasn't invited anyone to reset.`, ephemeral: true });
-        }
-
         db.prepare('DELETE FROM invites WHERE inviter_id = ?').run(user.id);
+        db.prepare('UPDATE rejoins SET inviter_id = NULL WHERE inviter_id = ?').run(user.id);
 
         const embed = new EmbedBuilder()
             .setTitle('🔄 Invites Reset for User')
@@ -44,6 +42,6 @@ module.exports = {
             .setColor('Red')
             .setTimestamp();
 
-        return interaction.reply({ embeds: [embed], ephemeral: true });
+        return interaction.reply({ embeds: [embed] });
     }
 };

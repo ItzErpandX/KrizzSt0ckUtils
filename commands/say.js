@@ -1,10 +1,10 @@
 const { PermissionFlagsBits } = require('discord.js');
-require('dotenv').config(); 
+require('dotenv').config();
 
 async function handleSay(interaction) {
 
-    if (interaction.user.id !== process.env.OWNER_ID) {
-        return interaction.reply({ content: '❌ Only my owner can use this command', ephemeral: true });
+    if (interaction.user.id !== process.env.OWNER_ID && interaction.user.id !== process.env.OWNER_ID2) {
+        return interaction.reply({ content: '❌ Only my owner (<@424988699164672011>) can use this command', ephemeral: true });
     }
 
     const message = interaction.options.getString('message');

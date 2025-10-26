@@ -9,37 +9,38 @@ module.exports = {
         const client = member.client;
         const logChannel = member.guild.channels.cache.get(REJOIN_LOG_CHANNEL);
         const invitelogChannel = member.guild.channels.cache.get(INVITE_LOG_CHANNEL);
-        const cachedInvites = client.invitations[member.guild.id] || {};
 
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Wait for Discord to update invites
+        // Fetch invites BEFORE join
+        const beforeInvites = client.invitations[member.guild.id] || {};
 
-        const newInvitesRaw = await member.guild.invites.fetch().catch(() => null);
-        if (!newInvitesRaw) return console.error(`❌ Couldn't fetch invites for ${member.guild.name}`);
-        const newInvites = {};
-        newInvitesRaw.forEach(inv => {
-            newInvites[inv.code] = {
+        // Fetch invites AFTER join
+        const afterInvitesRaw = await member.guild.invites.fetch().catch(() => null);
+        if (!afterInvitesRaw) return console.error(`❌ Couldn't fetch invites for ${member.guild.name}`);
+        const afterInvites = {};
+        afterInvitesRaw.forEach(inv => {
+            afterInvites[inv.code] = {
                 code: inv.code,
                 inviter: inv.inviter?.id || null,
                 uses: inv.uses
             };
         });
-        client.invitations[member.guild.id] = newInvites;
+        client.invitations[member.guild.id] = afterInvites;
 
+        // Find used invite
         let usedInvite = null;
-
-        for (const code in newInvites) {
-            const newInvite = newInvites[code];
-            const cachedInvite = cachedInvites[code];
-            if (cachedInvite && newInvite.uses > cachedInvite.uses) {
-                usedInvite = newInvite;
+        for (const code in afterInvites) {
+            const after = afterInvites[code];
+            const before = beforeInvites[code];
+            if (before && after.uses > before.uses) {
+                usedInvite = after;
                 break;
             }
         }
 
         if (!usedInvite) {
-            for (const code in newInvites) {
-                const newInvite = newInvites[code];
-                if (!cachedInvites[code] && newInvite.uses === 1) {
+            for (const code in afterInvites) {
+                const newInvite = afterInvites[code];
+                if (!beforeInvites[code] && newInvite.uses === 1) {
                     usedInvite = newInvite;
                     break;
                 }
@@ -69,7 +70,6 @@ module.exports = {
                 .setDescription(`**${member.user.tag}** (${member.id}) has rejoined the server.`)
                 .addFields(
                     { name: 'First Joined At', value: `<t:${Math.floor(new Date(rejoinData.first_joined_at).getTime() / 1000)}:f>`, inline: true },
-                    { name: 'Originally Invited By', value: rejoinData.inviter_id ? `<@${rejoinData.inviter_id}>` : 'Unknown', inline: true },
                     { name: 'Invited By (Now)', value: inviter ? `<@${inviter}>` : 'Unknown', inline: true }
                 )
                 .setTimestamp();
